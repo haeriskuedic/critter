@@ -67,6 +67,7 @@ public class CritterFunctionalTest {
         CustomerDTO customerDTO = createCustomerDTO();
         CustomerDTO newCustomer = userController.saveCustomer(customerDTO);
 
+        //PetDTO petDTO = createPetDTO();
         PetDTO petDTO = createPetDTO();
         petDTO.setOwnerId(newCustomer.getId());
         PetDTO newPet = petController.savePet(petDTO);

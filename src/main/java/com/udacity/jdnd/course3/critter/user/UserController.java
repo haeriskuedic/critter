@@ -42,6 +42,9 @@ public class UserController {
          * So, in summary, the line of code creates a new list of the IDs of all the pets owned by a customer.
          */
         List<Long> petIds = customer.getPets().stream().map(Pet::getId).collect(Collectors.toList());
+        /**
+         * Alternative way with loop instead of stream:
+         */
         //List<Long> petIds = new ArrayList<>();
         //for (Pet pet : customer.getPets()) {
         //   petIds.add(pet.getId());
@@ -54,6 +57,8 @@ public class UserController {
         return new EmployeeDTO(employee.getId(), employee.getName(), employee.getSkills(), employee.getDaysAvailable());
     }
 
+
+    // HTTP methods
     @PostMapping("/customer")
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO) {
         Customer customer = new Customer(customerDTO.getId(), customerDTO.getName(), customerDTO.getPhoneNumber(), customerDTO.getNotes());
@@ -85,13 +90,15 @@ public class UserController {
             CustomerDTO customerDTO = convertCustomerToCustomerDTO(customer);
             customerDTOs.add(customerDTO);
         }
+
         return customerDTOs;
     }
 
     @GetMapping("/customer/pet/{petId}")
     public CustomerDTO getOwnerByPet(@PathVariable long petId) {
+        Customer customer = customerService.getCustomerByPet(petId);
 
-        throw new UnsupportedOperationException();
+        return convertCustomerToCustomerDTO(customer);
     }
 
     @PostMapping("/employee")
@@ -109,16 +116,20 @@ public class UserController {
     @GetMapping("/employee/{employeeId}")
     public EmployeeDTO getEmployee(@PathVariable long employeeId) {
         Employee employee = employeeService.getEmployeeById(employeeId);
+
         return convertEmployeeToEmployeeDTO(employee);
     }
 
     @PutMapping("/employee/{employeeId}")
     public void setAvailability(@RequestBody Set<DayOfWeek> daysAvailable, @PathVariable long employeeId) {
-        throw new UnsupportedOperationException();
+        employeeService.setEmployeeAvailability(daysAvailable, employeeId);
     }
 
     @GetMapping("/employee/availability")
     public List<EmployeeDTO> findEmployeesForService(@RequestBody EmployeeRequestDTO employeeDTO) {
+        // TODO: findEmployeesForService / UserController
+
+
         throw new UnsupportedOperationException();
     }
 
