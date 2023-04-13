@@ -7,7 +7,9 @@ import com.udacity.jdnd.course3.critter.repository.EmployeeRepository;
 import com.udacity.jdnd.course3.critter.service.CustomerService;
 import com.udacity.jdnd.course3.critter.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
 import java.util.ArrayList;
@@ -62,11 +64,16 @@ public class UserController {
     @PostMapping("/customer")
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO) {
         Customer customer = new Customer(customerDTO.getId(), customerDTO.getName(), customerDTO.getPhoneNumber(), customerDTO.getNotes());
+        List<Long> petIds = customerDTO.getPetIds(); // get pets of customer
 
         // save customer and convert customer to customerDTO
         //customerService.saveCustomer(customer);
         CustomerDTO convertedCustomer;
-        convertedCustomer = convertCustomerToCustomerDTO(customerService.saveCustomer(customer));
+        try {
+            convertedCustomer = convertCustomerToCustomerDTO(customerService.saveCustomer(customer, petIds));
+        } catch(Exception exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Customer cannot be saved");
+        }
 
         return convertedCustomer;
     }
@@ -127,10 +134,13 @@ public class UserController {
 
     @GetMapping("/employee/availability")
     public List<EmployeeDTO> findEmployeesForService(@RequestBody EmployeeRequestDTO employeeDTO) {
-        // TODO: findEmployeesForService / UserController
+        List<Employee> employees = employeeService.getEmployeesByService(employeeDTO.getDate(), employeeDTO.getSkills());
 
-
-        throw new UnsupportedOperationException();
+        List<EmployeeDTO> employeeDTOs = new ArrayList<>();
+        for (Employee employee : employees) {
+            employeeDTOs.add(convertEmployeeToEmployeeDTO(employee));
+        }
+        return employeeDTOs;
     }
 
 }
