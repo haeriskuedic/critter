@@ -42,11 +42,15 @@ public class CustomerService {
 
     public List<Customer> getAllCustomers() {
         List<Customer> customers = customerRepository.findAll();
+
         return customers;
     }
 
     public Customer getCustomerByPet(Long petId){
-        return petRepository.getOne(petId).getCustomer();
+        //return petRepository.getOne(petId).getCustomer();
+        Customer customer = petRepository.getOne(petId).getCustomer();
+
+        return customer;
     }
 
 }
